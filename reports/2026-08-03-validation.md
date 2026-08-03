@@ -25,6 +25,7 @@ The executed artifact was inspected as evidence of the complete pipeline run. A 
 | Canonical notebook contains the v6 loader exactly once and no tuple-unpacked legacy loader call | Pass |
 | Executed snapshot has execution counts for all 19 code cells | Pass |
 | Executed snapshot contains zero Jupyter error outputs | Pass |
+| Output-cleared canonical notebook converts to HTML with current nbconvert | Pass |
 | Locked environment resolves, synchronizes, and imports every notebook dependency | Pass |
 | SAE loader exposes `release` and `sae_id` and returns the documented tuple type | Pass |
 | Notebook artifacts contain no recognized API-token, bearer-token, private-key, or local-path patterns | Pass |
@@ -43,7 +44,7 @@ The relevant loader signature shape observed in the fresh environment was:
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
 | Upstream download | 76,756 | `42ec8d90b10c5ef9897e1325d6d656d2472d05ea500daeef213c96c3e38a3e62` |
-| Canonical fixed notebook | 76,778 | `020184b9ae0df2718bfd1d0439dfbf75731e2be6fa7846a41b984dfae09dc004` |
+| Canonical fixed notebook | 22,583 | `affc3ac707d136c3221f53348e4131ef2c59513272415ed3d3813f97ab49a175` |
 | Executed snapshot | 103,731,130 | `aa991982f03c51b76fd8bfe49e784de1b5a2729bdf685f2a1383178fa3aa3cd9` |
 
 The executed snapshot is 1,126,470 bytes below GitHub’s 100 MiB regular-file ceiling, but it is stored through Git LFS to avoid placing a roughly 99 MiB blob in normal Git history.
@@ -51,6 +52,7 @@ The executed snapshot is 1,126,470 bytes below GitHub’s 100 MiB regular-file c
 ## Experiment notes and learnings
 
 - The user-provided notebook’s source already differed from upstream in exactly the intended loader name. Its large size came from approximately 98 MiB of saved Jupyter widget state, not additional source changes.
+- A first HTML-render check exposed nonstandard widget metadata in the upstream Colab download: current nbconvert raised `KeyError: 'state'`. Clearing canonical outputs, execution counts, and widget state fixed rendering while preserving every cell type and source string. The executed artifact remains byte-identical to the user-provided run.
 - The first smoke-test version report attempted to read `transformer_lens.__version__`. TransformerLens does not expose that module attribute, so the check was corrected to use the standard `importlib.metadata.version()` API. Imports and loader inspection were unaffected.
 - Importing Cobalt without a registered local license succeeds but prints its registration reminder. The repository documents registration and provides an optional empty `.env.example`; no credential was present or added.
 

@@ -24,7 +24,7 @@ sae_lens.SAE.from_pretrained_with_cfg_and_sparsity(
 
 SAE Lens v6 made `SAE.from_pretrained()` return only the SAE object. The replacement method retains the earlier `(sae, cfg_dict, sparsity)` result needed by later notebook cells. See the [SAE Lens v6 migration guide](https://github.com/decoderesearch/SAELens/blob/main/docs/migrating.md) and [loader implementation](https://github.com/decoderesearch/SAELens/blob/main/sae_lens/saes/sae.py).
 
-The resulting canonical notebook has SHA-256 `020184b9ae0df2718bfd1d0439dfbf75731e2be6fa7846a41b984dfae09dc004`.
+For a small, reliably renderable canonical artifact, saved outputs, execution counts, and top-level widget state were removed after applying the source change. This serialization-level cleanup does not alter any cell type or source text. The resulting canonical notebook has SHA-256 `affc3ac707d136c3221f53348e4131ef2c59513272415ed3d3813f97ab49a175`.
 
 ## Executed snapshot
 
