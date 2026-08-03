@@ -1,0 +1,23 @@
+# Local Python and uv state.
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local credentials and environment overrides.
+.env
+.env.*
+!.env.example
+
+# Jupyter working state.
+.ipynb_checkpoints/
+
+# Files generated when the notebook runs.
+explanations.json
+feature_vecs.npy
+sparsity.npy
+
+# Local logs, caches, and operating-system download metadata.
+*.log
+logs/
+*.Zone.Identifier
+*:Zone.Identifier

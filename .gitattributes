@@ -1,0 +1,2 @@
+# Keep the large executed notebook outside normal Git history while retaining it as a repository artifact.
+artifacts/*.executed.ipynb filter=lfs diff=lfs merge=lfs -text

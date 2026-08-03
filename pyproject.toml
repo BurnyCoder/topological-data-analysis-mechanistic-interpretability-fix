@@ -1,0 +1,15 @@
+[project]
+name = "topological-data-analysis-mechanistic-interpretability-fix"
+version = "0.1.0"
+description = "SAE Lens v6-compatible TDA notebook for mechanistic interpretability"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "cobalt-ai==0.4.2",
+    "ipyvuetify==1.11.3",
+    "ipywidgets==7.7.1",
+    "jupyterlab==4.6.2",
+    "numpy==2.0.2",
+    "pandas==2.2.2",
+    "sae-lens==6.47.0",
+    "transformer-lens==3.6.0",
+]
