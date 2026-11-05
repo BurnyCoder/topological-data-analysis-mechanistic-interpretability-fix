@@ -6,7 +6,7 @@ This repository preserves a compatibility-fixed version of the Colab notebook as
 
 ## Methodology and data flow
 
-The notebook loads a 32k-feature TopK sparse autoencoder trained on the layer-8 residual stream of GPT-2 Small. It uses the SAE decoder vectors as feature representations, builds multiresolution Mapper graphs with cosine distance, and combines those graphs with Neuronpedia feature descriptions in an interactive explorer. It also demonstrates coloring by feature sparsity and rebuilding the graph for the most frequently active 10% of features.
+The notebook loads a 32k-feature TopK sparse autoencoder trained on the layer-8 residual stream of GPT-2 Small: OpenAI's v5 SAE with 32,768 features and k = 32, as repackaged for SAE Lens in [jbloom/GPT2-Small-OAI-v5-32k-resid-post-SAEs](https://huggingface.co/jbloom/GPT2-Small-OAI-v5-32k-resid-post-SAEs) (see `v5_32k_layer_8.pt/cfg.json`). It uses the SAE decoder vectors as feature representations, builds multiresolution Mapper graphs with cosine distance, and combines those graphs with Neuronpedia feature descriptions in an interactive explorer. It also demonstrates coloring by feature sparsity (the SAE Lens log activation-frequency tensor) and rebuilding the graph for the most frequently active 10% of features.
 
 ```mermaid
 flowchart LR
@@ -23,7 +23,7 @@ flowchart LR
 
 ## Compatibility change
 
-SAE Lens v6 changed `SAE.from_pretrained()` to return only the SAE object. The notebook needs the configuration and sparsity tensor as well, so its single source-code change is:
+SAE Lens v6 changed `SAE.from_pretrained()` to return only the SAE object ([migration guide](https://github.com/decoderesearch/SAELens/blob/main/docs/migrating.md)). Legacy tuple unpacking still runs with a `DeprecationWarning`, but in SAE Lens 6.47.0 it yields `None` in place of the sparsity tensor (`SAE.__iter__` in [`sae.py`](https://github.com/decoderesearch/SAELens/blob/v6.47.0/sae_lens/saes/sae.py)). Later cells call `sparsity.numpy()`, so the notebook needs the tuple-returning loader. Its single source-code change is:
 
 ```python
 # Original SAE Lens <=5 call
@@ -43,7 +43,7 @@ Use the badge above, then run the cells in order. The notebook installs its pack
 
 ### Local JupyterLab with uv
 
-Python 3.12 and the working package versions are locked in `uv.lock`.
+Python 3.12 and a resolved dependency set are locked in `uv.lock`. The direct dependencies in `pyproject.toml` are pinned to the versions shown in the preserved Colab run's `pip` output, except `jupyterlab`, which that run did not use. Many transitive versions differ from the run: 53 of the 176 packages listed in both differ, for example `torch` 2.13.0 in the lock versus 2.11.0+cpu in the run. The locked environment has been import-tested only. The full notebook has not been run in it.
 
 ```bash
 git clone https://github.com/BurnyCoder/topological-data-analysis-mechanistic-interpretability-fix.git
@@ -73,7 +73,7 @@ Running the notebook writes `explanations.json`, `feature_vecs.npy`, and `sparsi
 
 ## Validation and provenance
 
-The preserved execution completed all 19 code cells without an error output using Python 3.12.8, SAE Lens 6.47.0, Cobalt 0.4.2, and TransformerLens 3.6.0. Structural, dependency, size, LFS, and credential checks are recorded in the [validation report](reports/2026-08-03-validation.md).
+The preserved execution ran all 19 code cells in order (execution counts 13 to 30) without an error output. The `pip` output of its first code cell shows Python 3.12, SAE Lens 6.47.0, Cobalt 0.4.2, and TransformerLens 3.6.0. Its `language_info` metadata says Python 3.12.8, but that field is identical to the upstream notebook's, whose own outputs were produced under Python 3.11, so it does not establish the patch version. Structural, dependency, size, LFS, and credential checks are recorded in the [validation report](reports/2026-08-03-validation.md).
 
 The notebook was linked by Jakob Hansen in the discussion below Gunnar Carlsson’s LessWrong post. Exact upstream links, hashes, attribution details, and the modification boundary are documented in [provenance](docs/provenance.md).
 
