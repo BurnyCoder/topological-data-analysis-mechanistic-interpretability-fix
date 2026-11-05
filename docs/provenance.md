@@ -10,7 +10,7 @@ The upstream download had SHA-256 `42ec8d90b10c5ef9897e1325d6d656d2472d05ea500da
 
 ## Modification boundary
 
-The canonical notebook preserves the upstream cell order, cell types, and source text except for one compatibility change in cell 5:
+The canonical notebook preserves the upstream cell order, cell types, and source text except for one compatibility change in cell 5 (zero-based index; the sixth cell and third code cell):
 
 ```python
 sae_lens.SAE.from_pretrained(
@@ -22,7 +22,7 @@ became:
 sae_lens.SAE.from_pretrained_with_cfg_and_sparsity(
 ```
 
-SAE Lens v6 made `SAE.from_pretrained()` return only the SAE object. The replacement method retains the earlier `(sae, cfg_dict, sparsity)` result needed by later notebook cells. See the [SAE Lens v6 migration guide](https://github.com/decoderesearch/SAELens/blob/main/docs/migrating.md) and [loader implementation](https://github.com/decoderesearch/SAELens/blob/main/sae_lens/saes/sae.py).
+SAE Lens v6 made `SAE.from_pretrained()` return only the SAE object. The replacement method returns the earlier `(sae, cfg_dict, sparsity)` tuple. Later notebook cells use `sae` and `sparsity`; `cfg_dict` is not used after cell 5. Legacy tuple unpacking of `SAE.from_pretrained()` still runs in SAE Lens 6.47.0 with a `DeprecationWarning`, but it yields `None` for `sparsity` ([`SAE.__iter__` at v6.47.0](https://github.com/decoderesearch/SAELens/blob/v6.47.0/sae_lens/saes/sae.py)). The migration guide names the replacement `SAE.load_from_pretrained_with_cfg_and_sparsity()`, but the method defined in `sae.py` is `SAE.from_pretrained_with_cfg_and_sparsity()`. See the [SAE Lens v6 migration guide](https://github.com/decoderesearch/SAELens/blob/main/docs/migrating.md) and [loader implementation](https://github.com/decoderesearch/SAELens/blob/main/sae_lens/saes/sae.py).
 
 For a small, reliably renderable canonical artifact, saved outputs, execution counts, and top-level widget state were removed after applying the source change. This serialization-level cleanup does not alter any cell type or source text. The resulting canonical notebook has SHA-256 `affc3ac707d136c3221f53348e4131ef2c59513272415ed3d3813f97ab49a175`.
 
@@ -31,6 +31,8 @@ For a small, reliably renderable canonical artifact, saved outputs, execution co
 The executed artifact is the user-provided successful Colab run, preserved byte-for-byte before reconstructing the canonical notebook. Its SHA-256 is `aa991982f03c51b76fd8bfe49e784de1b5a2729bdf685f2a1383178fa3aa3cd9` and its size is 103,731,130 bytes.
 
 Its 26 cell types and sources match the canonical notebook. The size difference comes from saved outputs and approximately 98 MiB of Jupyter widget state for the interactive graphs.
+
+Its code cells have execution counts 13 to 30 in cell order, and its install cell reports every package as already satisfied. It was therefore run in a Colab session that had executed earlier cells, not in a fresh kernel. Its `pip` paths show Python 3.12. Its `language_info` metadata (Python 3.12.8) is identical to the upstream notebook's, whose own outputs were produced under Python 3.11, so that field does not establish the run's patch version.
 
 ## Attribution and licensing
 
