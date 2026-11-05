@@ -6,7 +6,7 @@ Generated at `2026-08-03T21:54:12+02:00` in Europe/Berlin.
 
 Question: can the upstream TDA notebook be made compatible with SAE Lens v6 through only the loader-name change while preserving a verifiable successful execution?
 
-Hypothesis: replacing `SAE.from_pretrained` with `SAE.from_pretrained_with_cfg_and_sparsity` will retain the `(sae, cfg_dict, sparsity)` values used by later cells, and no other source edit is required.
+Hypothesis: replacing `SAE.from_pretrained` with `SAE.from_pretrained_with_cfg_and_sparsity` will return the `(sae, cfg_dict, sparsity)` tuple, whose `sae` and `sparsity` values are used by later cells, and no other source edit is required.
 
 ## Evidence and method
 
@@ -21,7 +21,7 @@ The executed artifact was inspected as evidence of the complete pipeline run. A 
 | Upstream, canonical, and executed notebooks parse as nbformat v4 | Pass |
 | All artifacts contain 26 cells | Pass |
 | Canonical and executed cell types and sources are identical | Pass |
-| Upstream source differs only in cell 5’s loader name | Pass |
+| Upstream source differs only in cell 5’s (zero-based index) loader name | Pass |
 | Canonical notebook contains the v6 loader exactly once and no tuple-unpacked legacy loader call | Pass |
 | Executed snapshot has execution counts for all 19 code cells | Pass |
 | Executed snapshot contains zero Jupyter error outputs | Pass |
@@ -31,7 +31,7 @@ The executed artifact was inspected as evidence of the complete pipeline run. A 
 | Notebook artifacts contain no recognized API-token, bearer-token, private-key, or local-path patterns | Pass |
 | Executed snapshot is selected by the Git LFS filter | Pass |
 
-The saved execution records Python 3.12.8, `cobalt-ai==0.4.2`, `sae-lens==6.47.0`, and `transformer-lens==3.6.0`. The fresh import smoke test used Linux/WSL2, Python 3.12.3, uv 0.11.27, and the same three pinned package versions.
+The saved execution’s `pip` output records Python 3.12 (`/usr/local/lib/python3.12/dist-packages`), `cobalt-ai==0.4.2`, `sae-lens==6.47.0`, and `transformer-lens==3.6.0`. Its `language_info` metadata says 3.12.8, but that field is identical to the upstream notebook’s, whose outputs were produced under Python 3.11, so it does not establish the patch version. The run’s execution counts are 13 to 30 in cell order and every package was already installed, so the snapshot comes from a Colab session that had executed earlier cells, not from a fresh kernel. The lockfile matches the run only for the direct dependencies: 53 of the 176 packages listed in both the run’s `pip` output and `uv.lock` have different versions, including `torch` (2.11.0+cpu in the run, 2.13.0 in the lock). The fresh import smoke test used Linux/WSL2, Python 3.12.3, uv 0.11.27, and the same three pinned package versions.
 
 The relevant loader signature shape observed in the fresh environment was:
 
@@ -59,3 +59,7 @@ The executed snapshot is 1,126,470 bytes below GitHub’s 100 MiB regular-file c
 ## Conclusion
 
 The evidence supports the hypothesis: the SAE Lens v6 loader-name update is the only required source modification, both distributed notebook variants preserve the same code, and the existing full execution completed without notebook errors under the pinned core versions.
+
+## Corrections
+
+On 5 November 2026 a fact-check corrected the Python patch-version claim, clarified the zero-based cell index and which tuple values later cells use, and added the execution-count and lockfile-drift notes above. Evidence: the `pip` output and metadata of the executed snapshot, the independently downloaded upstream notebook, and `uv.lock`.
